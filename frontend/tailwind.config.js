@@ -6,7 +6,11 @@ export default {
     extend: {
       colors: {
         gray: {
-          950: '#0a0f1a',
+          600: '#6b7280',
+          700: '#3f3f3f',
+          800: '#1f1f1f',
+          900: '#141414',
+          950: '#0a0a0a',
         },
       },
       fontFamily: {
