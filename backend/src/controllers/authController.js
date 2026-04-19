@@ -5,11 +5,10 @@ const pool = require('../config/db');
 const validate = require('../middleware/validate');
 
 const signToken = (user) =>
-  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+  jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 
-// POST /api/auth/signup
 const signupValidation = [
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Valid email required'),
@@ -17,20 +16,19 @@ const signupValidation = [
 ];
 
 const signup = [
-  signupValidation,
-  validate,
+  signupValidation, validate,
   async (req, res) => {
     const { name, email, password } = req.body;
     try {
-      const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+      const [existing] = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
       if (existing.length) return res.status(409).json({ message: 'Email already registered' });
 
       const hashed = await bcrypt.hash(password, 12);
       const [result] = await pool.query(
-        'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, role',
         [name, email, hashed]
       );
-      const user = { id: result.insertId, name, email };
+      const user = result[0];
       res.status(201).json({ token: signToken(user), user });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -38,19 +36,17 @@ const signup = [
   },
 ];
 
-// POST /api/auth/login
 const loginValidation = [
   body('email').isEmail(),
   body('password').notEmpty(),
 ];
 
 const login = [
-  loginValidation,
-  validate,
+  loginValidation, validate,
   async (req, res) => {
     const { email, password } = req.body;
     try {
-      const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+      const [rows] = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
       if (!rows.length) return res.status(401).json({ message: 'Invalid credentials' });
 
       const user = rows[0];
@@ -65,11 +61,10 @@ const login = [
   },
 ];
 
-// GET /api/auth/me
 const me = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, name, email, avatar, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, avatar, role, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
     if (!rows.length) return res.status(404).json({ message: 'User not found' });
