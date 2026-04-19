@@ -20,7 +20,7 @@ const Activity   = lazy(() => import('./pages/Activity'));
 const Profile    = lazy(() => import('./pages/Profile'));
 
 const Spinner = () => (
-  <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
+  <div className="flex items-center justify-center h-screen" style={{ backgroundColor: 'var(--bg-page)' }}>
     <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
   </div>
 );
@@ -46,7 +46,8 @@ export default function App() {
             <Toaster
               position="top-right"
               toastOptions={{
-                className: 'dark:bg-gray-800 dark:text-white text-sm',
+                className: 'text-sm',
+              style: { backgroundColor: 'var(--bg-card)', color: 'inherit' },
                 duration: 3500,
               }}
             />
