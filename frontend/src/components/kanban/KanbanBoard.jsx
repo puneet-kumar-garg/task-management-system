@@ -31,9 +31,10 @@ function KanbanCard({ task }) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border-l-4 ${PRIORITY_BORDER[task.priority]} cursor-grab active:cursor-grabbing select-none hover:shadow-md transition-shadow`}
+      className={`bg-white rounded-xl p-3 shadow-sm border-l-4 ${PRIORITY_BORDER[task.priority]} cursor-grab active:cursor-grabbing select-none hover:shadow-md transition-shadow`}
+      style={{ backgroundColor: 'var(--bg-card)' }}
     >
-      <p className="text-sm font-medium dark:text-white line-clamp-2">{task.title}</p>
+      <p className="text-sm font-medium line-clamp-2">{task.title}</p>
       {task.deadline && (
         <p className="text-xs text-gray-400 mt-1.5">📅 {task.deadline?.split('T')[0]}</p>
       )}
@@ -58,10 +59,10 @@ function Column({ col, tasks, onAddTask }) {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
           <div className={`w-2.5 h-2.5 rounded-full ${col.color}`} />
-          <span className="text-sm font-semibold dark:text-white">{col.label}</span>
-          <span className="text-xs text-gray-400 bg-gray-200 dark:bg-gray-700 rounded-full px-1.5">{tasks.length}</span>
+          <span className="text-sm font-semibold">{col.label}</span>
+          <span className="text-xs text-gray-400 bg-gray-200 rounded-full px-1.5">{tasks.length}</span>
         </div>
-        <button onClick={() => onAddTask(col.id)} className="p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+        <button onClick={() => onAddTask(col.id)} className="p-1 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors">
           <PlusIcon className="w-4 h-4" />
         </button>
       </div>
@@ -144,7 +145,7 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold dark:text-white">Kanban Board</h1>
+        <h1 className="text-2xl font-bold">Kanban Board</h1>
         <button onClick={() => { setDefaultStatus('pending'); setShowModal(true); }} className="btn-primary">
           <PlusIcon className="w-4 h-4" /> New Task
         </button>

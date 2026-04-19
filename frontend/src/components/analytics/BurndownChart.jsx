@@ -13,7 +13,7 @@ export default function BurndownChart({ data = [] }) {
 
   return (
     <div className="card">
-      <h3 className="font-semibold dark:text-white mb-4">Burndown Chart</h3>
+      <h3 className="font-semibold mb-4">Burndown Chart</h3>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(156,163,175,0.2)" />

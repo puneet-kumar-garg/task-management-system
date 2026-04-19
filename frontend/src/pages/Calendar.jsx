@@ -49,7 +49,7 @@ export default function CalendarPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold dark:text-white">Calendar</h1>
+        <h1 className="text-2xl font-bold">Calendar</h1>
         <div className="flex gap-2">
           {[Views.MONTH, Views.WEEK, Views.DAY].map((v) => (
             <button

@@ -15,10 +15,10 @@ export default function ProductivityScore({ score = 0, stats = {} }) {
 
   return (
     <div className="card flex flex-col items-center gap-4 py-6">
-      <h3 className="font-semibold dark:text-white">Productivity Score</h3>
+      <h3 className="font-semibold">Productivity Score</h3>
       <div className="relative w-36 h-36">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r={r} fill="none" stroke="currentColor" strokeWidth="10" className="text-gray-100 dark:text-gray-700" />
+          <circle cx="60" cy="60" r={r} fill="none" stroke="currentColor" strokeWidth="10" className="text-gray-100" />
           <motion.circle
             cx="60" cy="60" r={r} fill="none"
             stroke={stroke} strokeWidth="10"

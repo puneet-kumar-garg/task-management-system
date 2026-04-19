@@ -24,30 +24,30 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--bg-page)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
             <span className="text-white text-2xl">✓</span>
           </div>
-          <h1 className="text-2xl font-bold dark:text-white">Create account</h1>
+          <h1 className="text-2xl font-bold">Create account</h1>
           <p className="text-gray-500 mt-1">Join TaskFlow today</p>
         </div>
 
         <div className="card">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Full Name</label>
+              <label className="block text-sm font-medium mb-1">Full Name</label>
               <input className="input" placeholder="John Doe" value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Email</label>
+              <label className="block text-sm font-medium mb-1">Email</label>
               <input type="email" className="input" placeholder="you@example.com" value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Password</label>
+              <label className="block text-sm font-medium mb-1">Password</label>
               <input type="password" className="input" placeholder="Min. 6 characters" value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
             </div>

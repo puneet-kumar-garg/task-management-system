@@ -36,14 +36,11 @@ export default function CommandPalette({ open, onClose }) {
   }, [query]);
 
   const filtered = query
-    ? [...tasks.map((t) => ({ id: `task-${t.id}`, label: t.title, icon: '📌', path: `/tasks`, sub: t.status })),
+    ? [...tasks.map((t) => ({ id: `task-${t.id}`, label: t.title, icon: '📌', path: '/tasks', sub: t.status })),
        ...NAV_ACTIONS.filter((a) => a.label.toLowerCase().includes(query.toLowerCase()))]
     : NAV_ACTIONS;
 
-  const handleSelect = (item) => {
-    navigate(item.path);
-    onClose();
-  };
+  const handleSelect = (item) => { navigate(item.path); onClose(); };
 
   const handleKey = (e) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); setSelected((s) => Math.min(s + 1, filtered.length - 1)); }
@@ -65,46 +62,58 @@ export default function CommandPalette({ open, onClose }) {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search input */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-              <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
+              <MagnifyingGlassIcon className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); setSelected(0); }}
                 onKeyDown={handleKey}
                 placeholder="Search tasks or navigate…"
-                className="flex-1 bg-transparent text-sm outline-none dark:text-white placeholder-gray-400"
+                className="flex-1 bg-transparent text-sm outline-none"
+                style={{ color: 'inherit' }}
               />
-              <kbd className="text-[10px] text-gray-400 border border-gray-200 dark:border-gray-600 rounded px-1.5 py-0.5">ESC</kbd>
+              <kbd
+                className="text-[10px] rounded px-1.5 py-0.5"
+                style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+              >ESC</kbd>
             </div>
 
             {/* Results */}
             <div className="max-h-72 overflow-y-auto py-2">
               {filtered.length === 0 ? (
-                <p className="text-center text-sm text-gray-400 py-6">No results found</p>
+                <p className="text-center text-sm py-6" style={{ color: 'var(--text-muted)' }}>No results found</p>
               ) : filtered.map((item, i) => (
                 <button
                   key={item.id}
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setSelected(i)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                    i === selected ? 'bg-blue-50 dark:bg-blue-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                  }`}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
+                  style={{ backgroundColor: i === selected ? 'rgba(37,99,235,0.08)' : 'transparent' }}
                 >
                   <span className="text-base">{item.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium dark:text-white truncate">{item.label}</p>
-                    {item.sub && <p className="text-xs text-gray-400 capitalize">{item.sub.replace('_', ' ')}</p>}
+                    <p className="text-sm font-medium truncate">{item.label}</p>
+                    {item.sub && (
+                      <p className="text-xs capitalize" style={{ color: 'var(--text-muted)' }}>
+                        {item.sub.replace('_', ' ')}
+                      </p>
+                    )}
                   </div>
-                  {i === selected && <kbd className="text-[10px] text-gray-400 border border-gray-200 dark:border-gray-600 rounded px-1.5 py-0.5">↵</kbd>}
+                  {i === selected && (
+                    <kbd
+                      className="text-[10px] rounded px-1.5 py-0.5"
+                      style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+                    >↵</kbd>
+                  )}
                 </button>
               ))}
             </div>
 
-            <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 flex gap-4 text-[10px] text-gray-400">
-              <span><kbd className="border border-gray-200 dark:border-gray-600 rounded px-1">↑↓</kbd> navigate</span>
-              <span><kbd className="border border-gray-200 dark:border-gray-600 rounded px-1">↵</kbd> select</span>
-              <span><kbd className="border border-gray-200 dark:border-gray-600 rounded px-1">esc</kbd> close</span>
+            <div className="px-4 py-2 border-t flex gap-4 text-[10px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+              <span><kbd className="rounded px-1" style={{ border: '1px solid var(--border)' }}>↑↓</kbd> navigate</span>
+              <span><kbd className="rounded px-1" style={{ border: '1px solid var(--border)' }}>↵</kbd> select</span>
+              <span><kbd className="rounded px-1" style={{ border: '1px solid var(--border)' }}>esc</kbd> close</span>
             </div>
           </motion.div>
         </div>

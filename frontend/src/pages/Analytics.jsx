@@ -50,7 +50,7 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold dark:text-white">Analytics</h1>
+        <h1 className="text-2xl font-bold">Analytics</h1>
         <div className="flex gap-2">
           {['weekly', 'monthly'].map((p) => (
             <button
@@ -69,7 +69,7 @@ export default function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Trends chart */}
         <div className="card lg:col-span-2">
-          <h3 className="font-semibold dark:text-white mb-4">Task Completion Trends</h3>
+          <h3 className="font-semibold mb-4">Task Completion Trends</h3>
           {loading ? <div className="skeleton h-48 rounded-lg" /> : (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={trends} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -105,7 +105,7 @@ export default function Analytics() {
       {/* Team selector */}
       {teams.length > 0 && (
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-sm font-medium dark:text-white">Team:</span>
+          <span className="text-sm font-medium">Team:</span>
           {teams.map((t) => (
             <button
               key={t.id}

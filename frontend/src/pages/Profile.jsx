@@ -27,7 +27,7 @@ export default function Profile() {
 
   return (
     <div className="space-y-5 max-w-lg">
-      <h1 className="text-2xl font-bold dark:text-white">Profile</h1>
+      <h1 className="text-2xl font-bold">Profile</h1>
 
       <div className="card">
         {/* Avatar */}
@@ -36,18 +36,18 @@ export default function Profile() {
             {user?.name?.[0]?.toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-lg dark:text-white">{user?.name}</p>
+            <p className="font-semibold text-lg">{user?.name}</p>
             <p className="text-gray-500 text-sm">{user?.email}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Full Name</label>
+            <label className="block text-sm font-medium mb-1">Full Name</label>
             <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Avatar URL</label>
+            <label className="block text-sm font-medium mb-1">Avatar URL</label>
             <input className="input" value={form.avatar} onChange={(e) => setForm({ ...form, avatar: e.target.value })} placeholder="https://..." />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full">
@@ -57,7 +57,7 @@ export default function Profile() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-3 dark:text-white">Account</h2>
+        <h2 className="font-semibold mb-3">Account</h2>
         <p className="text-sm text-gray-500 mb-4">Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}</p>
         <button onClick={logout} className="btn-danger w-full">Sign Out</button>
       </div>

@@ -49,7 +49,7 @@ export default function Tasks() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold dark:text-white">Tasks</h1>
+        <h1 className="text-2xl font-bold">Tasks</h1>
         <button onClick={() => { setEditTask(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
           <PlusIcon className="w-4 h-4" /> New Task
         </button>
