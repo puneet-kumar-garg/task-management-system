@@ -1,6 +1,7 @@
 const { body } = require('express-validator');
 const pool = require('../config/db');
 const validate = require('../middleware/validate');
+const { notifyTaskAssigned } = require('./notificationController');
 
 const taskValidation = [
   body('title').trim().notEmpty().withMessage('Title is required'),
@@ -9,14 +10,14 @@ const taskValidation = [
   body('deadline').optional({ nullable: true }).isDate().withMessage('Invalid date'),
 ];
 
-// GET /api/tasks
 const getTasks = async (req, res) => {
-  const { status, priority, search, team_id } = req.query;
+  const { status, priority, search, team_id, page = 1, limit = 20 } = req.query;
+  const offset = (page - 1) * limit;
   try {
     let query = `
-      SELECT t.*, 
-        u1.name AS creator_name, u1.email AS creator_email,
-        u2.name AS assignee_name, u2.email AS assignee_email,
+      SELECT t.*,
+        u1.name AS creator_name, u1.email AS creator_email, u1.avatar AS creator_avatar,
+        u2.name AS assignee_name, u2.email AS assignee_email, u2.avatar AS assignee_avatar,
         tm.name AS team_name
       FROM tasks t
       LEFT JOIN users u1 ON t.creator_id = u1.id
@@ -33,6 +34,8 @@ const getTasks = async (req, res) => {
     if (search) { query += ' AND (t.title LIKE ? OR t.description LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
 
     query += ' ORDER BY FIELD(t.priority,"high","medium","low"), t.deadline ASC';
+    query += ' LIMIT ? OFFSET ?';
+    params.push(parseInt(limit), parseInt(offset));
 
     const [tasks] = await pool.query(query, params);
     res.json(tasks);
@@ -41,11 +44,11 @@ const getTasks = async (req, res) => {
   }
 };
 
-// GET /api/tasks/:id
 const getTask = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT t.*, u1.name AS creator_name, u2.name AS assignee_name, tm.name AS team_name
+      `SELECT t.*, u1.name AS creator_name, u1.avatar AS creator_avatar,
+              u2.name AS assignee_name, u2.avatar AS assignee_avatar, tm.name AS team_name
        FROM tasks t
        LEFT JOIN users u1 ON t.creator_id = u1.id
        LEFT JOIN users u2 ON t.assignee_id = u2.id
@@ -60,10 +63,8 @@ const getTask = async (req, res) => {
   }
 };
 
-// POST /api/tasks
 const createTask = [
-  taskValidation,
-  validate,
+  taskValidation, validate,
   async (req, res) => {
     const { title, description, deadline, priority, assignee_id, team_id, status } = req.body;
     try {
@@ -71,12 +72,22 @@ const createTask = [
         'INSERT INTO tasks (title, description, deadline, priority, status, creator_id, assignee_id, team_id) VALUES (?,?,?,?,?,?,?,?)',
         [title, description || null, deadline || null, priority || 'medium', status || 'pending', req.user.id, assignee_id || null, team_id || null]
       );
-      // Log activity
       await pool.query(
         'INSERT INTO activity_logs (user_id, action, entity_type, entity_id) VALUES (?,?,?,?)',
         [req.user.id, `Created task: ${title}`, 'task', result.insertId]
       );
-      const [task] = await pool.query('SELECT * FROM tasks WHERE id = ?', [result.insertId]);
+      // Notify assignee
+      if (assignee_id && assignee_id !== req.user.id) {
+        await notifyTaskAssigned(req.io, assignee_id, title, result.insertId, req.user.name);
+      }
+      // Notify team
+      if (team_id) req.io?.notifyTeam(team_id, 'task_update', { action: 'created', taskId: result.insertId });
+
+      const [task] = await pool.query(
+        `SELECT t.*, u1.name AS creator_name, u2.name AS assignee_name, u2.avatar AS assignee_avatar, tm.name AS team_name
+         FROM tasks t LEFT JOIN users u1 ON t.creator_id=u1.id LEFT JOIN users u2 ON t.assignee_id=u2.id LEFT JOIN teams tm ON t.team_id=tm.id
+         WHERE t.id = ?`, [result.insertId]
+      );
       res.status(201).json(task[0]);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -84,16 +95,14 @@ const createTask = [
   },
 ];
 
-// PUT /api/tasks/:id
 const updateTask = [
-  taskValidation,
-  validate,
+  taskValidation, validate,
   async (req, res) => {
     const { title, description, deadline, priority, status, assignee_id, team_id } = req.body;
     try {
       const [existing] = await pool.query('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
       if (!existing.length) return res.status(404).json({ message: 'Task not found' });
-      if (existing[0].creator_id !== req.user.id)
+      if (existing[0].creator_id !== req.user.id && req.user.role === 'member')
         return res.status(403).json({ message: 'Not authorized' });
 
       await pool.query(
@@ -104,6 +113,12 @@ const updateTask = [
         'INSERT INTO activity_logs (user_id, action, entity_type, entity_id) VALUES (?,?,?,?)',
         [req.user.id, `Updated task: ${title}`, 'task', req.params.id]
       );
+      // Notify new assignee
+      if (assignee_id && assignee_id !== existing[0].assignee_id && assignee_id !== req.user.id) {
+        await notifyTaskAssigned(req.io, assignee_id, title, req.params.id, req.user.name);
+      }
+      if (team_id) req.io?.notifyTeam(team_id, 'task_update', { action: 'updated', taskId: req.params.id });
+
       const [updated] = await pool.query('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
       res.json(updated[0]);
     } catch (err) {
@@ -112,7 +127,6 @@ const updateTask = [
   },
 ];
 
-// PATCH /api/tasks/:id/status
 const updateStatus = async (req, res) => {
   const { status } = req.body;
   if (!['pending', 'in_progress', 'completed'].includes(status))
@@ -123,20 +137,20 @@ const updateStatus = async (req, res) => {
       'INSERT INTO activity_logs (user_id, action, entity_type, entity_id) VALUES (?,?,?,?)',
       [req.user.id, `Changed task status to: ${status}`, 'task', req.params.id]
     );
+    const [task] = await pool.query('SELECT team_id FROM tasks WHERE id = ?', [req.params.id]);
+    if (task[0]?.team_id) req.io?.notifyTeam(task[0].team_id, 'task_update', { action: 'status_changed', taskId: req.params.id, status });
     res.json({ message: 'Status updated' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// DELETE /api/tasks/:id
 const deleteTask = async (req, res) => {
   try {
     const [existing] = await pool.query('SELECT creator_id FROM tasks WHERE id = ?', [req.params.id]);
     if (!existing.length) return res.status(404).json({ message: 'Task not found' });
-    if (existing[0].creator_id !== req.user.id)
+    if (existing[0].creator_id !== req.user.id && req.user.role === 'member')
       return res.status(403).json({ message: 'Not authorized' });
-
     await pool.query('DELETE FROM tasks WHERE id = ?', [req.params.id]);
     res.json({ message: 'Task deleted' });
   } catch (err) {
@@ -144,7 +158,6 @@ const deleteTask = async (req, res) => {
   }
 };
 
-// GET /api/tasks/stats
 const getStats = async (req, res) => {
   try {
     const [stats] = await pool.query(
@@ -154,8 +167,7 @@ const getStats = async (req, res) => {
         SUM(status = 'pending') AS pending,
         SUM(status = 'in_progress') AS in_progress,
         SUM(deadline < CURDATE() AND status != 'completed') AS overdue
-       FROM tasks
-       WHERE creator_id = ? OR assignee_id = ?`,
+       FROM tasks WHERE creator_id = ? OR assignee_id = ?`,
       [req.user.id, req.user.id]
     );
     res.json(stats[0]);
