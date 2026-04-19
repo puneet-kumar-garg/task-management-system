@@ -210,230 +210,159 @@ body {
 .page-active { opacity: 1; transform: translateY(0); transition: all 0.25s ease; }
 
 /* ══════════════════════════════════════════════════════════
-   react-big-calendar — full custom override
-   (default CSS removed; we control every pixel)
+   react-big-calendar — color/theme overrides only
+   (default CSS kept for structure; we override visuals)
    ══════════════════════════════════════════════════════════ */
 
-/* Container */
-.rbc-calendar {
+/* Wrapper resets */
+.rbc-wrapper .rbc-calendar {
   font-family: inherit;
   font-size: 13px;
   color: inherit;
-  background: var(--bg-card);
-  border-radius: 0.875rem;
-  overflow: hidden;
+  height: 100%;
+}
+
+/* Kill all default white backgrounds */
+.rbc-wrapper .rbc-month-view,
+.rbc-wrapper .rbc-time-view,
+.rbc-wrapper .rbc-agenda-view,
+.rbc-wrapper .rbc-day-bg,
+.rbc-wrapper .rbc-month-row,
+.rbc-wrapper .rbc-header,
+.rbc-wrapper .rbc-time-header,
+.rbc-wrapper .rbc-time-content,
+.rbc-wrapper .rbc-time-slot,
+.rbc-wrapper .rbc-timeslot-group,
+.rbc-wrapper .rbc-time-header-content,
+.rbc-wrapper .rbc-time-gutter,
+.rbc-wrapper .rbc-day-slot,
+.rbc-wrapper .rbc-agenda-table {
+  background-color: var(--bg-card) !important;
+  color: inherit !important;
+}
+
+/* Off-range days slightly dimmed */
+.rbc-wrapper .rbc-off-range-bg {
+  background-color: var(--bg-page) !important;
+}
+
+/* Today highlight */
+.rbc-wrapper .rbc-today {
+  background-color: rgba(37,99,235,0.07) !important;
+}
+
+/* All borders use CSS variable */
+.rbc-wrapper .rbc-month-view,
+.rbc-wrapper .rbc-header,
+.rbc-wrapper .rbc-header + .rbc-header,
+.rbc-wrapper .rbc-month-row,
+.rbc-wrapper .rbc-day-bg + .rbc-day-bg,
+.rbc-wrapper .rbc-time-view,
+.rbc-wrapper .rbc-time-header,
+.rbc-wrapper .rbc-time-content,
+.rbc-wrapper .rbc-timeslot-group,
+.rbc-wrapper .rbc-time-header-content,
+.rbc-wrapper .rbc-agenda-view table,
+.rbc-wrapper .rbc-agenda-view table td,
+.rbc-wrapper .rbc-agenda-view table th {
+  border-color: var(--border) !important;
 }
 
 /* Toolbar */
-.rbc-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
+.rbc-wrapper .rbc-toolbar {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
 }
-.rbc-toolbar-label {
+.rbc-wrapper .rbc-toolbar-label {
   font-weight: 600;
   font-size: 15px;
-  color: inherit;
 }
-.rbc-btn-group button {
+.rbc-wrapper .rbc-btn-group button {
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border) !important;
   color: inherit;
-  padding: 5px 12px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s;
 }
-.rbc-btn-group button:first-child { border-radius: 8px 0 0 8px; }
-.rbc-btn-group button:last-child  { border-radius: 0 8px 8px 0; }
-.rbc-btn-group button:not(:first-child) { border-left: none; }
-.rbc-btn-group button:hover,
-.rbc-btn-group button.rbc-active {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
+.rbc-wrapper .rbc-btn-group button:hover,
+.rbc-wrapper .rbc-btn-group button.rbc-active {
+  background: #2563eb !important;
+  color: #fff !important;
+  border-color: #2563eb !important;
 }
 
-/* Month grid */
-.rbc-month-view {
-  border: none;
-  flex: 1;
-}
-.rbc-month-header {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-}
-.rbc-header {
-  flex: 1;
-  padding: 8px 4px;
-  text-align: center;
+/* Day header labels */
+.rbc-wrapper .rbc-header {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
-  border: none;
-  background: transparent;
+  padding: 8px 4px;
 }
-.rbc-header + .rbc-header { border-left: 1px solid var(--border); }
-
-.rbc-month-row {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  border-top: 1px solid var(--border);
-  overflow: hidden;
-}
-.rbc-month-row + .rbc-month-row { border-top: 1px solid var(--border); }
-
-.rbc-row-bg { display: flex; flex: 1; }
-.rbc-day-bg {
-  flex: 1;
-  background: var(--bg-card);
-  transition: background 0.1s;
-}
-.rbc-day-bg + .rbc-day-bg { border-left: 1px solid var(--border); }
-.rbc-day-bg:hover { background: var(--bg-page); }
-.rbc-off-range-bg { background: var(--bg-page); opacity: 0.6; }
-.rbc-today { background: rgba(37,99,235,0.06) !important; }
 
 /* Date numbers */
-.rbc-row-content { position: relative; z-index: 1; }
-.rbc-date-cell {
-  padding: 4px 8px;
-  text-align: right;
+.rbc-wrapper .rbc-date-cell {
   font-size: 12px;
   color: var(--text-muted);
+  padding: 4px 8px;
 }
-.rbc-date-cell.rbc-now a,
-.rbc-date-cell.rbc-now {
+.rbc-wrapper .rbc-date-cell.rbc-now a {
   color: #2563eb;
   font-weight: 700;
 }
-.rbc-date-cell a { color: inherit; text-decoration: none; }
-.rbc-off-range .rbc-date-cell { opacity: 0.35; }
+.rbc-wrapper .rbc-off-range .rbc-date-cell a {
+  opacity: 0.35;
+}
 
 /* Events */
-.rbc-event {
+.rbc-wrapper .rbc-event {
   border-radius: 5px !important;
   border: none !important;
-  padding: 2px 6px !important;
   font-size: 11px !important;
-  font-weight: 500;
+  font-weight: 500 !important;
   color: #fff !important;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  padding: 2px 6px !important;
 }
-.rbc-event:focus { outline: 2px solid #2563eb; outline-offset: 1px; }
-.rbc-event-label { display: none; }
-.rbc-event-content { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rbc-show-more {
-  font-size: 11px;
+.rbc-wrapper .rbc-event-label { display: none; }
+.rbc-wrapper .rbc-show-more {
   color: #2563eb;
+  font-size: 11px;
   font-weight: 600;
-  padding: 0 8px;
-  cursor: pointer;
   background: transparent;
-  border: none;
 }
 
-/* Week / Day view */
-.rbc-time-view {
-  border: none;
-  background: var(--bg-card);
-}
-.rbc-time-header {
-  border-bottom: 1px solid var(--border);
-}
-.rbc-time-header-content {
-  border-left: 1px solid var(--border);
-}
-.rbc-time-header-cell {
-  padding: 8px 4px;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-.rbc-time-content {
-  border-top: 1px solid var(--border);
-  overflow-y: auto;
-}
-.rbc-time-content > * + * > * {
-  border-left: 1px solid var(--border);
-}
-.rbc-timeslot-group {
-  border-bottom: 1px solid var(--border);
-  min-height: 40px;
-}
-.rbc-time-slot {
+/* Time labels */
+.rbc-wrapper .rbc-label,
+.rbc-wrapper .rbc-time-slot {
   color: var(--text-muted);
   font-size: 11px;
 }
-.rbc-label { padding: 0 8px; color: var(--text-muted); font-size: 11px; }
-.rbc-current-time-indicator {
+.rbc-wrapper .rbc-current-time-indicator {
   background: #2563eb;
-  height: 2px;
-}
-.rbc-day-slot .rbc-event {
-  border: none !important;
 }
 
-/* Agenda view */
-.rbc-agenda-view table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.rbc-agenda-view table thead th {
-  padding: 8px 12px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-}
-.rbc-agenda-view table tbody td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-.rbc-agenda-date-cell, .rbc-agenda-time-cell {
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-/* Selected / popup */
-.rbc-selected { box-shadow: 0 0 0 2px #2563eb !important; }
-.rbc-overlay {
+/* Popup overlay */
+.rbc-wrapper .rbc-overlay {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  padding: 8px;
-  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
-.rbc-overlay-header {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 8px 8px;
+.rbc-wrapper .rbc-overlay-header {
   border-bottom: 1px solid var(--border);
-  margin-bottom: 4px;
   color: inherit;
 }
 
-/* Row segments */
-.rbc-row { display: flex; }
-.rbc-row-segment { padding: 0 2px 2px; }
+/* Agenda */
+.rbc-wrapper .rbc-agenda-date-cell,
+.rbc-wrapper .rbc-agenda-time-cell {
+  color: var(--text-muted);
+}
 
 
 /* ── Dark mode overrides for Tailwind dark: classes ─────── */

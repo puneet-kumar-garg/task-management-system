@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, parseISO } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
-
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import api from '../utils/api';
 import TaskModal from '../components/TaskModal';
 
@@ -42,6 +42,7 @@ export default function CalendarPage() {
       border: 'none',
       fontSize: '11px',
       padding: '2px 6px',
+      color: '#fff',
       opacity: event.resource.status === 'completed' ? 0.5 : 1,
     },
   });
@@ -63,7 +64,7 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <div className="card p-0 overflow-hidden" style={{ height: 600 }}>
+      <div className="rbc-wrapper card p-0 overflow-hidden" style={{ height: 640 }}>
         <Calendar
           localizer={localizer}
           events={events}
@@ -73,12 +74,11 @@ export default function CalendarPage() {
           onNavigate={setDate}
           eventPropGetter={eventStyleGetter}
           onSelectEvent={(e) => { setSelectedTask(e.resource); setShowModal(true); }}
-          style={{ height: '100%', padding: '16px' }}
+          style={{ height: '100%' }}
         />
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-4 text-xs text-gray-500">
+      <div className="flex gap-4 text-xs" style={{ color: 'var(--text-muted)' }}>
         {Object.entries(PRIORITY_COLOR).map(([p, c]) => (
           <div key={p} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: c }} />
