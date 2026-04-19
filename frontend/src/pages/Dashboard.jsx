@@ -32,8 +32,8 @@ const KPICard = ({ label, value, icon: Icon, gradient, index }) => (
         <Icon className="w-6 h-6 text-white" />
       </div>
       <div>
-        <p className="text-2xl font-bold dark:text-white">{value ?? '—'}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="text-2xl font-bold">{value ?? '—'}</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</p>
       </div>
     </div>
   </motion.div>
@@ -70,7 +70,6 @@ export default function Dashboard() {
 
   useEffect(() => { fetchStats(); fetchTasks(1); }, []);
 
-  // Real-time sync
   useEffect(() => {
     const handler = () => { fetchStats(); fetchTasks(1); };
     window.addEventListener('task_update', handler);
@@ -107,8 +106,8 @@ export default function Dashboard() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold dark:text-white">Good day, {user?.name?.split(' ')[0]} 👋</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Here's what's happening with your tasks</p>
+          <h1 className="text-2xl font-bold">Good day, {user?.name?.split(' ')[0]} 👋</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Here's what's happening with your tasks</p>
         </div>
         <button onClick={() => { setEditTask(null); setShowModal(true); }} className="btn-primary">
           <PlusIcon className="w-4 h-4" /> New Task
@@ -129,11 +128,11 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <ArrowTrendingUpIcon className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium dark:text-white">Overall Progress</span>
+              <span className="text-sm font-medium">Overall Progress</span>
             </div>
             <span className="text-sm font-bold text-blue-600">{completionPct}%</span>
           </div>
-          <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border)' }}>
             <motion.div
               className="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full"
               initial={{ width: 0 }}
@@ -147,14 +146,14 @@ export default function Dashboard() {
       {/* Task list */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold dark:text-white">Pending Tasks</h2>
-          <Link to="/tasks" className="text-sm text-blue-600 hover:underline">View all →</Link>
+          <h2 className="font-semibold">Pending Tasks</h2>
+          <Link to="/tasks" className="text-sm text-blue-500 hover:underline">View all →</Link>
         </div>
 
         {loadingTasks && tasks.length === 0 ? (
           <SkeletonList count={4} />
         ) : tasks.length === 0 ? (
-          <div className="card text-center py-12 text-gray-400">
+          <div className="card text-center py-12" style={{ color: 'var(--text-muted)' }}>
             <ClipboardDocumentListIcon className="w-10 h-10 mx-auto mb-2 opacity-40" />
             <p className="text-sm">No pending tasks. You're all caught up!</p>
           </div>
@@ -167,7 +166,6 @@ export default function Dashboard() {
                 onStatusChange={handleStatusChange}
               />
             ))}
-            {/* Infinite scroll sentinel */}
             <div ref={sentinelRef} className="h-4" />
             {loadingTasks && <SkeletonList count={2} />}
           </div>
